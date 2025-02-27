@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Code Editor</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/dracula.min.css">
+    <style>
+        body { display: flex; flex-direction: column; height: 100vh; margin: 0; background: #282a36; color: #fff; font-family: Arial, sans-serif; }
+        .container { display: flex; flex: 1; }
+        .editor-container { width: 50%; padding: 10px; display: flex; flex-direction: column; }
+        .preview-container { width: 50%; background: #fff; }
+        iframe { width: 100%; height: 100%; border: none; }
+        .CodeMirror { height: 200px; }
+        .btn-run { background: #50fa7b; border: none; padding: 10px; cursor: pointer; margin-top: 10px; font-size: 16px; }
+        select { padding: 5px; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <h2 style="text-align: center; background: #444; margin: 0; padding: 10px;">Live Code Editor</h2>
+    <div class="container">
+        <div class="editor-container">
+            <label>HTML</label>
+            <textarea id="htmlEditor"></textarea>
+            <label>CSS</label>
+            <textarea id="cssEditor"></textarea>
+            <label>JavaScript</label>
+            <textarea id="jsEditor"></textarea>
+            <button class="btn-run" id="runButton">Run Code</button>
+        </div>
+        <div class="preview-container">
+            <iframe id="preview"></iframe>
+        </div>
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/xml/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/css/css.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/javascript/javascript.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            function createEditor(id, mode) {
+                return CodeMirror.fromTextArea(document.getElementById(id), {
+                    mode: mode,
+                    theme: "dracula",
+                    lineNumbers: true,
+                    autoCloseTags: true,
+                    autoCloseBrackets: true
+                });
+            }
+
+            const htmlEditor = createEditor("htmlEditor", "xml");
+            const cssEditor = createEditor("cssEditor", "css");
+            const jsEditor = createEditor("jsEditor", "javascript");
+            
+            function updatePreview() {
+                const previewFrame = document.getElementById('preview').contentDocument;
+                previewFrame.open();
+                previewFrame.write(`<!DOCTYPE html>
+                <html>
+                <head>
+                    <style>${cssEditor.getValue()}</style>
+                </head>
+                <body>
+                    ${htmlEditor.getValue()}
+                    <script>${jsEditor.getValue()}<\/script>
+                </body>
+                </html>`);
+                previewFrame.close();
+            }
+            
+            document.getElementById("runButton").addEventListener("click", updatePreview);
+        });
+    </script>
+</body>
+</html>
