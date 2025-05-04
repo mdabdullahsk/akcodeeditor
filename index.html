@@ -307,4 +307,29 @@
   }
 
   // Close Add Form
-  function
+  function closeForm() {
+    document.getElementById("rightPanel").innerHTML = '';
+  }
+
+  // Close Details View
+  function closeDetails() {
+    document.getElementById("rightPanel").innerHTML = '';
+  }
+
+  // Update Menu Stats
+  function updateMenu() {
+    const totalAmount = customers.reduce((sum, cust) => sum + cust.total, 0);
+    const amountPaid = customers.reduce((sum, cust) => sum + cust.gave, 0);
+    const amountRemaining = totalAmount - amountPaid;
+
+    document.getElementById("totalAmount").innerText = totalAmount;
+    document.getElementById("amountPaid").innerText = amountPaid;
+    document.getElementById("amountRemaining").innerText = amountRemaining;
+  }
+
+  // Initial Render
+  renderCustomers();
+</script>
+
+</body>
+</html>
