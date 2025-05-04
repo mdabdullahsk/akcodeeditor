@@ -1,77 +1,310 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live Code Editor</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/dracula.min.css">
-    <style>
-        body { display: flex; flex-direction: column; height: 100vh; margin: 0; background: #282a36; color: #fff; font-family: Arial, sans-serif; }
-        .container { display: flex; flex: 1; }
-        .editor-container { width: 50%; padding: 10px; display: flex; flex-direction: column; }
-        .preview-container { width: 50%; background: #fff; }
-        iframe { width: 100%; height: 100%; border: none; }
-        .CodeMirror { height: 200px; }
-        .btn-run { background: #50fa7b; border: none; padding: 10px; cursor: pointer; margin-top: 10px; font-size: 16px; }
-        select { padding: 5px; margin-top: 10px; }
-    </style>
+  <meta charset="UTF-8">
+  <title>Customer Manager</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <!-- Icons -->
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f5f5f5;
+    }
+
+    header {
+      background: #2c3e50;
+      color: white;
+      padding: 15px;
+      font-size: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header button {
+      background: #16a085;
+      color: white;
+      padding: 8px 15px;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .container {
+      padding: 15px;
+    }
+
+    .customer-card {
+      background: white;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .customer-info {
+      cursor: pointer;
+      flex: 1;
+    }
+
+    .customer-info h4 {
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+
+    .customer-info small {
+      color: #666;
+    }
+
+    .delete-btn {
+      background: #e74c3c;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .form, .details {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 15px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .form input, .details input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    .form button, .details button {
+      width: 100%;
+      padding: 10px;
+      background: #2980b9;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .highlight {
+      color: #f39c12;
+    }
+
+    .blue {
+      color: #2980b9;
+    }
+
+    .red {
+      color: #e74c3c;
+    }
+
+    .details span {
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .menu {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      background-color: #16a085;
+      color: white;
+      padding: 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+    }
+
+    .menu-content {
+      position: absolute;
+      top: 45px;
+      left: 15px;
+      background-color: #fff;
+      color: #333;
+      padding: 15px;
+      border-radius: 5px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      display: none;
+      width: 250px;
+    }
+
+    .menu-content span {
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    /* Close button */
+    .close-btn {
+      background: #e74c3c;  /* LAL RONG */
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      width: 100%;
+      cursor: pointer;
+    }
+
+    @media (min-width: 768px) {
+      .container {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+      }
+      #customerList {
+        width: 50%;
+      }
+      #rightPanel {
+        width: 50%;
+      }
+    }
+  </style>
 </head>
 <body>
-    <h2 style="text-align: center; background: #444; margin: 0; padding: 10px;">Live Code Editor</h2>
-    <div class="container">
-        <div class="editor-container">
-            <label>HTML</label>
-            <textarea id="htmlEditor"></textarea>
-            <label>CSS</label>
-            <textarea id="cssEditor"></textarea>
-            <label>JavaScript</label>
-            <textarea id="jsEditor"></textarea>
-            <button class="btn-run" id="runButton">Run Code</button>
-        </div>
-        <div class="preview-container">
-            <iframe id="preview"></iframe>
-        </div>
-    </div>
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/xml/xml.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/css/css.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/javascript/javascript.min.js"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            function createEditor(id, mode) {
-                return CodeMirror.fromTextArea(document.getElementById(id), {
-                    mode: mode,
-                    theme: "dracula",
-                    lineNumbers: true,
-                    autoCloseTags: true,
-                    autoCloseBrackets: true
-                });
-            }
 
-            const htmlEditor = createEditor("htmlEditor", "xml");
-            const cssEditor = createEditor("cssEditor", "css");
-            const jsEditor = createEditor("jsEditor", "javascript");
-            
-            function updatePreview() {
-                const previewFrame = document.getElementById('preview').contentDocument;
-                previewFrame.open();
-                previewFrame.write(`<!DOCTYPE html>
-                <html>
-                <head>
-                    <style>${cssEditor.getValue()}</style>
-                </head>
-                <body>
-                    ${htmlEditor.getValue()}
-                    <script>${jsEditor.getValue()}<\/script>
-                </body>
-                </html>`);
-                previewFrame.close();
-            }
-            
-            document.getElementById("runButton").addEventListener("click", updatePreview);
-        });
-    </script>
-</body>
-</html>
+<header>
+  <span><i class="fas fa-users"></i> My Customers</span>
+  <button onclick="showForm()"><i class="fas fa-user-plus"></i> Add</button>
+</header>
+
+<!-- Menu Button -->
+<div class="menu" onclick="toggleMenu()">
+  <i class="fas fa-bars"></i> Menu
+</div>
+
+<!-- Menu Content -->
+<div class="menu-content" id="menuContent">
+  <span><strong>Total Amount:</strong> <span id="totalAmount">0</span> TK</span>
+  <span><strong>Amount Paid:</strong> <span id="amountPaid">0</span> TK</span>
+  <span><strong>Amount Remaining:</strong> <span id="amountRemaining">0</span> TK</span>
+</div>
+
+<div class="container">
+  <div id="customerList">
+    <!-- Customers will appear here -->
+  </div>
+
+  <div id="rightPanel">
+    <!-- Form or Details -->
+  </div>
+</div>
+
+<script>
+  let customers = [];
+
+  // Toggle Menu Visibility
+  function toggleMenu() {
+    const menuContent = document.getElementById("menuContent");
+    menuContent.style.display = menuContent.style.display === "block" ? "none" : "block";
+  }
+
+  // Show Add Customer Form
+  function showForm() {
+    document.getElementById('rightPanel').innerHTML = `
+      <div class="form">
+        <h3><i class="fas fa-user-plus"></i> Add New Customer</h3>
+        <input type="text" id="name" placeholder="Full Name">
+        <input type="text" id="address" placeholder="Address">
+        <input type="text" id="phone" placeholder="Phone">
+        <input type="number" id="total" placeholder="Amount (TK)">
+        <button onclick="addCustomer()">Save</button>
+        <!-- Close Button for Add Form (LAL RONG) -->
+        <button class="close-btn" onclick="closeForm()">Close</button>
+      </div>
+    `;
+  }
+
+  // Add New Customer
+  function addCustomer() {
+    const name = document.getElementById("name").value;
+    const address = document.getElementById("address").value;
+    const phone = document.getElementById("phone").value;
+    const total = parseInt(document.getElementById("total").value);
+
+    if (!name || !address || !phone || isNaN(total)) return alert("Please fill all fields");
+
+    const customer = { name, address, phone, total, gave: 0 };
+    customers.push(customer);
+    renderCustomers();
+    updateMenu();
+    document.getElementById("rightPanel").innerHTML = '';
+  }
+
+  // Render Customers
+  function renderCustomers() {
+    const list = document.getElementById("customerList");
+    list.innerHTML = '';
+    customers.forEach((cust, index) => {
+      list.innerHTML += `
+        <div class="customer-card">
+          <div class="customer-info" onclick="showDetails(${index})">
+            <h4><i class="fas fa-user-circle"></i> ${cust.name}</h4>
+            <small>${cust.phone}</small>
+          </div>
+          <button class="delete-btn" onclick="deleteCustomer(${index})"><i class="fas fa-trash"></i></button>
+        </div>
+      `;
+    });
+  }
+
+  // Show Customer Details
+  function showDetails(index) {
+    const cust = customers[index];
+    document.getElementById('rightPanel').innerHTML = `
+      <div class="details">
+        <h3><i class="fas fa-id-card"></i> ${cust.name}</h3>
+        <span><i class="fas fa-map-marker-alt"></i> ${cust.address}</span>
+        <span><i class="fas fa-phone-alt"></i> ${cust.phone}</span>
+        <span class="highlight">Total: ${cust.total} TK</span>
+        <span class="blue">Gave: ${cust.gave} TK</span>
+        <span class="red">Remaining: ${cust.total - cust.gave} TK</span>
+        <input type="number" id="pay" placeholder="Add Money">
+        <button onclick="addMoney(${index})"><i class="fas fa-coins"></i> Add</button>
+        <!-- Close Button for Details (LAL RONG) -->
+        <button class="close-btn" onclick="closeDetails()">Close</button>
+      </div>
+    `;
+  }
+
+  // Add Money to Customer
+  function addMoney(index) {
+    const amount = parseInt(document.getElementById("pay").value);
+    if (isNaN(amount)) return alert("Invalid amount");
+    customers[index].gave += amount;
+    showDetails(index);
+    updateMenu();
+  }
+
+  // Delete Customer
+  function deleteCustomer(index) {
+    if (confirm("Are you sure to delete this customer?")) {
+      customers.splice(index, 1);
+      renderCustomers();
+      updateMenu();
+    }
+  }
+
+  // Close Add Form
+  function
